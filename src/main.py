@@ -7,8 +7,12 @@ font = cv.FONT_HERSHEY_PLAIN
 #ascii_chars = '''  .:-=+*#%@'''
 ascii_chars = ''' .`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$'''
 
-desired_fps = 30
+desired_fps = 12
 frame_time = 1 / desired_fps
+
+step = 15
+intensity_threshold = 200
+COLOR_WHITE = (255,255,255)
 
 def main():
 	cap = cv.VideoCapture(0)
@@ -20,32 +24,34 @@ def main():
 	width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
 	channels = 3
 	
+	prev = 0;
 
 	while True:
-		start_time = time.time()
+		time_elapsed = time.time() - prev;
 		ret, frame = cap.read()
 
 		if not ret:
 			print("Can't recieve frame (stream end?). Exiting...")
 			break
-		gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
-		#print(gray[100,100])
-		ascii_img = np.zeros((height, width, channels), dtype=np.uint8)
-		for i in range(0, frame.shape[1], 5):
-			for j in range(0, frame.shape[0], 5):
-				#print(i,j)
-				#val = int((0.5 * max(frame[j, i]) + 0.5 * min(frame[j, i])))
-				val = gray[j,i]
-				if val < 110:
-					char = ascii_chars[val % len(ascii_chars)]
-					cv.putText(ascii_img, char, (i,j), font, 0.5, (255,255,255),1, cv.LINE_AA)
+		if time_elapsed > frame_time:
+			prev = time.time()
+			gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
-		cv.imshow('ascii_img', ascii_img)
+			ascii_img = np.zeros((height, width, channels), dtype=np.uint8)
+			for i in range(0, frame.shape[1], step):
+				for j in range(0, frame.shape[0], step):
+					b = int(frame[j,i,0])
+					g = int(frame[j,i,1])
+					r = int(frame[j,i,2])
+					frame_color = (b,g,r)
 
-		elapsed = time.time() - start_time
-		if elapsed < frame_time:
-			time.sleep(frame_time - elapsed)
+					val = gray[j,i]
+					if val < intensity_threshold:
+						char = ascii_chars[val % len(ascii_chars)]
+						cv.putText(ascii_img, char, (i,j), font, 0.7, frame_color ,1, cv.LINE_AA)
+
+			cv.imshow('ascii_img', ascii_img)
 
 		if cv.waitKey(1) == ord('q'):
 			break
