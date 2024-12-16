@@ -1,0 +1,8 @@
+* Get camera working
+* Convert camera input into ascii
+* Add color mode
+* Seperate logic into functions/classes
+- Add gui for changing parameters
+- Find way to select camera in-app
+- Check if ascii conversion logic is good/can be improved
+- Bundle into application?

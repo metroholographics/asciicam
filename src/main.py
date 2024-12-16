@@ -1,62 +1,52 @@
-import numpy as np
-import cv2 as cv
-import time
+from engine import *
 
-font = cv.FONT_HERSHEY_PLAIN
+desired_fps = 15
+app_state = App("ascii*cam",desired_fps)
 
-#ascii_chars = '''  .:-=+*#%@'''
-ascii_chars = ''' .`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$'''
-
-desired_fps = 12
-frame_time = 1 / desired_fps
-
-step = 15
-intensity_threshold = 200
 COLOR_WHITE = (255,255,255)
+font = cv.FONT_HERSHEY_PLAIN
+ascii_char_short = '''  .:-=+*#%@'''
+ascii_char_long = ''' .`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$'''
+font_size = 0.7
+step = 10
+intensity_threshold = 255
+
+ascii_img = Ascii_Img(font, font_size, COLOR_WHITE, ascii_char_short, step, intensity_threshold)
 
 def main():
-	cap = cv.VideoCapture(0)
-	if not cap.isOpened():
-		print("Cannot open camera")
-		exit()
+	app_state.init_camera(0)
 
-	height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
-	width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
-	channels = 3
-	
-	prev = 0;
+	while app_state.running:
+		app_state.update_elapsed_time()
 
-	while True:
-		time_elapsed = time.time() - prev;
-		ret, frame = cap.read()
-
+		ret, app_state.frame = app_state.cap.read()
 		if not ret:
 			print("Can't recieve frame (stream end?). Exiting...")
 			break
 
-		if time_elapsed > frame_time:
-			prev = time.time()
-			gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+		ascii_img.reset(app_state.height, app_state.width, app_state.channels) 
 
-			ascii_img = np.zeros((height, width, channels), dtype=np.uint8)
-			for i in range(0, frame.shape[1], step):
-				for j in range(0, frame.shape[0], step):
-					b = int(frame[j,i,0])
-					g = int(frame[j,i,1])
-					r = int(frame[j,i,2])
-					frame_color = (b,g,r)
+		if app_state.elapsed_time > app_state.frame_time:
+			app_state.update_previous_time()
+			gray_frame = app_state.get_grayscale_frame()
+			
+			for i in range(0, app_state.width, ascii_img.step):
+				for j in range(0, app_state.height, ascii_img.step):
+					frame_color = app_state.get_pixel_color(j, i)
+					val = gray_frame[j,i]
+					if val < ascii_img.intensity:
+						ascii_img.draw_pixel_text(ascii_img.get_char(val), (i, j), frame_color)
+			app_state.display_ascii_frame(ascii_img.frame)
 
-					val = gray[j,i]
-					if val < intensity_threshold:
-						char = ascii_chars[val % len(ascii_chars)]
-						cv.putText(ascii_img, char, (i,j), font, 0.7, frame_color ,1, cv.LINE_AA)
+		app_state.check_quit()
 
-			cv.imshow('ascii_img', ascii_img)
+	end_app(app_state)
 
-		if cv.waitKey(1) == ord('q'):
-			break
 
-	cap.release()
+def end_app(app):
+	if (app.cap):
+		print("Releasing camera...")
+		app.cap.release()
 	cv.destroyAllWindows()
 
 if __name__ == "__main__":
