@@ -18,7 +18,7 @@ ascii_img = Ascii_Img(font_size, COLOR_WHITE, ascii_char_long, step_min, intensi
 
 cv.createTrackbar('Resolution', app_state.name, step_min, 20, nothing)
 cv.createTrackbar('Color mode', app_state.name, 0, 1, nothing)
-cv.createTrackbar('Intensity', app_state.name, intensity_min, 255, nothing)
+cv.createTrackbar('Intensity', app_state.name, 128, 255, nothing)
 
 def main():
 	app_state.init_camera(0)
@@ -33,7 +33,7 @@ def main():
 			break
 
 		ascii_img.step = max(cv.getTrackbarPos('Resolution', app_state.name), step_min)
-		ascii_img.color_mode = round(cv.getTrackbarPos('Color', app_state.name))
+		ascii_img.color_mode = round(cv.getTrackbarPos('Color mode', app_state.name))
 		ascii_img.intensity = max(cv.getTrackbarPos('Intensity', app_state.name), intensity_min)
 
 
