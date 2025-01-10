@@ -2,7 +2,9 @@
 
 
 Opens webcam with ascii filter.
+
 Press 'q' to quit
+
 Sliders to change resolution, intensity, and color mode
 
 ```
