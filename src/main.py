@@ -17,7 +17,7 @@ intensity_min = 50
 ascii_img = Ascii_Img(font_size, COLOR_WHITE, ascii_char_long, step_min, intensity_min)
 
 cv.createTrackbar('Resolution', app_state.name, step_min, 20, nothing)
-cv.createTrackbar('Color', app_state.name, 0, 1, nothing)
+cv.createTrackbar('Color mode', app_state.name, 0, 1, nothing)
 cv.createTrackbar('Intensity', app_state.name, intensity_min, 255, nothing)
 
 def main():
