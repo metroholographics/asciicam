@@ -69,15 +69,14 @@ class Ascii_Img():
 		self.frame = np.zeros((height, width, channels), dtype=np.uint8)
 
 	def get_char(self, val):
-		return self.char_set[val % len(self.char_set)]
+		scale = len(self.char_set) / 256
+		index = int(val * scale)
+		return self.char_set[min(index, len(self.char_set) - 1)]
 
 	def draw_pixel_text(self, char, dest, color=False):
 		if color:
 			self.color = color
 		cv.putText(self.frame, char, dest, self.font, self.size, self.color, 1, cv.LINE_AA)
-	def get_color(self, color):
-		if self.color_mode == 1:
-			return color
-		return (255,255,255)
+
 
 
