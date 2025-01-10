@@ -12,7 +12,7 @@ ascii_char_short = '''  .:-=+*#%@'''
 ascii_char_long = ''' .`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$'''
 font_size = 0.7
 step_min = 8
-intensity_min= 50
+intensity_min = 50
 
 ascii_img = Ascii_Img(font_size, COLOR_WHITE, ascii_char_long, step_min, intensity_min)
 
@@ -54,8 +54,6 @@ def main():
 		app_state.check_quit()
 
 	end_app(app_state)
-
-
 
 
 def end_app(app):
