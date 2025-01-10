@@ -55,14 +55,15 @@ class App():
 			self.running = False
 
 class Ascii_Img():
-	def __init__(self, font, size, color, char_set, step, intensity):
+	def __init__(self, size, color, char_set, step, intensity):
 		self.frame = None
-		self.font = font
+		self.font = cv.FONT_HERSHEY_PLAIN
 		self.size = size
 		self.color = color
 		self.char_set = char_set
 		self.step = step
 		self.intensity = intensity
+		self.color_mode = 0
 
 	def reset(self, height, width, channels):
 		self.frame = np.zeros((height, width, channels), dtype=np.uint8)
@@ -71,10 +72,12 @@ class Ascii_Img():
 		return self.char_set[val % len(self.char_set)]
 
 	def draw_pixel_text(self, char, dest, color=False):
-		if (color):
+		if color:
 			self.color = color
-
 		cv.putText(self.frame, char, dest, self.font, self.size, self.color, 1, cv.LINE_AA)
-
+	def get_color(self, color):
+		if self.color_mode == 1:
+			return color
+		return (255,255,255)
 
 
